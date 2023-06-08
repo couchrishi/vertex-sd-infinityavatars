@@ -1,0 +1,102 @@
+
+
+const { GoogleAuth } = require('google-auth-library');
+const fetch = require('node-fetch');
+const zlib = require('zlib');
+const pako = require('pako');
+
+
+async function getAccessToken() {
+  const auth = new GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY,
+    },
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+  const client = await auth.getClient();
+  const accessToken = await client.getAccessToken();
+  return accessToken;
+}
+
+// const bufferToBase64 = (buffer) => {
+//   let arr = new Uint8Array(buffer);
+//   const base64 = btoa(
+//     arr.reduce((data, byte) => data + String.fromCharCode(byte), "")
+//   );
+//   return `data:image/png;base64,${base64}`;
+// };
+
+const bufferToBase64 = (buffer) => {
+  return `data:image/png;base64,${Buffer.from(buffer).toString('base64')}`
+  ;
+};
+
+const generateAction = async (req, res) => {
+  console.log('Received request');
+  // Get the values from environment variables
+  const project = process.env.PROJECT_ID;
+  const location = process.env.LOCATION;
+  const endpointId = process.env.ENDPOINT_ID;
+
+
+  let responseData = Buffer.from([]);
+
+  // Ensure the required environment variables are set
+  if (!project || !location || !endpointId) {
+  console.error('Missing required environment variables');
+  res.status(500).json({ error: 'Missing required environment variables' });
+  return;
+  }
+
+  // Get the access token
+  const accessToken = await getAccessToken();
+  console.log(accessToken.token);
+
+  // Set the headers for the request
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken.token}`,
+  };
+
+  // Get the input data
+  const input = JSON.parse(req.body).finalInput;
+
+   // Construct the API URL
+  const apiUrl = `https://${process.env.LOCATION}-aiplatform.googleapis.com/v1/projects/${process.env.PROJECT_ID}/locations/${process.env.LOCATION}/endpoints/${process.env.ENDPOINT_ID}:predict`;
+
+  const input_str = `"${input}"`
+
+  // Construct the request payload
+  const payload = {
+    instances: {"prompt": input_str},
+  };
+
+
+  // Make a POST request to the API endpoint
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  if (response.ok) {
+ 
+    //Extract the image data from the compressed response body
+    const buffer = await response.arrayBuffer();
+
+    // Make sure to change to base64
+    const base64Image = bufferToBase64(buffer);
+    res.status(200).json({ image: base64Image });
+
+  } else if (response.status === 503) {
+    const json = await response.json();
+    res.status(503).json(json);
+  } else {
+    const json = await response.json();
+    res.status(response.status).json({ error: response.statusText });
+  }
+
+};
+
+export default generateAction;

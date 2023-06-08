@@ -9,15 +9,29 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/aiplatform": "^2.15.0",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",
+    "google-auth-library": "^8.8.0",
+    "jimp": "^0.22.8",
     "next": "^13.4.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "pako": "^2.1.0",
+    "pngjs-image": "^0.11.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zlib": "^1.0.5"
   },
   "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
   "main": "next.config.js",
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/couchrishi/vertex-sd-infinityavatars.git"
+  },
+  "bugs": {
+    "url": "https://github.com/couchrishi/vertex-sd-infinityavatars/issues"
+  },
+  "homepage": "https://github.com/couchrishi/vertex-sd-infinityavatars#readme"
 }

@@ -45,7 +45,7 @@ const Home = () => {
       setRetry(0);
     }
 
-    const finalInput = input.replace(/saibalaji/gi, 'saibalajifaces');
+    const finalInput = input.replace(/saibalaji/gi, 'saiavatar');
 
     // Add the fetch request
     const response = await fetch('/api/generate', {
@@ -57,7 +57,7 @@ const Home = () => {
     });
 
     const data = await response.json();
-
+  
     // If model still loading, drop that retry time
     if (response.status === 503) {
       console.log('Model is loading still :(.')
@@ -77,6 +77,7 @@ const Home = () => {
     // Remove content from input box
     setInput('');
     setImg(data.image);
+    //setImg(img);
     setIsGenerating(false);
   }
 
