@@ -43,9 +43,13 @@ const clientOptions = {
   apiEndpoint: process.env.API_ENDPOINT,
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY,
+    //private_key: process.env.GOOGLE_PRIVATE_KEY,
+    private_key: process.env.PRIVATE_KEY.split(String.raw`\n`).join('\n'),
   },
 };
+
+
+
 
 // Instantiates a client
 const predictionServiceClient = new PredictionServiceClient(clientOptions);
